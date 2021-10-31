@@ -10,6 +10,11 @@ const (
 	OpGTE           // >=
 	OpLT            // <
 	OpLTE           // <=
+
+	// Logical operation
+	OpAND // AND
+	OpOR  // OR
+	OpNot // NOT
 )
 
 var ops = [...]string{
@@ -19,6 +24,9 @@ var ops = [...]string{
 	OpGTE: " >= ",
 	OpLT:  " < ",
 	OpLTE: " <= ",
+	OpAND: " AND ",
+	OpOR:  " OR ",
+	OpNot: " NOT ",
 }
 
 // writeComp writes a comparaison operator
@@ -59,4 +67,39 @@ func Lt(column string, value interface{}) BuildFunc {
 // Lte builds a `<=` operator
 func Lte(column string, value interface{}) BuildFunc {
 	return writeComp(OpLTE, column, value)
+}
+
+// buildLog build a logical operator
+func buildLog(op Op, fns ...BuildFunc) BuildFunc {
+	bf := func(b *Builder) {
+		for i, fn := range fns {
+			if i > 0 || op == OpNot {
+				b.WriteString(ops[op])
+			}
+
+			b.WriteString("(")
+			fn(b)
+			b.WriteString(")")
+
+			if op == OpNot {
+				break
+			}
+		}
+	}
+	return bf
+}
+
+// And builds an `AND` operator
+func And(fns ...BuildFunc) BuildFunc {
+	return buildLog(OpAND, fns...)
+}
+
+// Or builds an `OR` operator
+func Or(fns ...BuildFunc) BuildFunc {
+	return buildLog(OpOR, fns...)
+}
+
+// Not builds a `NOT` operator
+func Not(fn BuildFunc) BuildFunc {
+	return buildLog(OpNot, fn)
 }
