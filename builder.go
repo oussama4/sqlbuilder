@@ -24,6 +24,17 @@ func NewBuilder() *Builder {
 	return b
 }
 
+// Expr adds a raw sql expression to the query builder
+func Expr(expr string, args ...interface{}) BuildFunc {
+	bf := func(b *Builder) {
+		b.WriteString(expr)
+		for _, arg := range args {
+			b.WriteArg(arg)
+		}
+	}
+	return bf
+}
+
 // WriteArg adds an input argument to builder
 func (b *Builder) WriteArg(arg interface{}) {
 	b.paramsCount++
