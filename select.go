@@ -1,6 +1,9 @@
 package sqlbuilder
 
-import "strings"
+import (
+	"strconv"
+	"strings"
+)
 
 type joinType int
 
@@ -39,12 +42,16 @@ type SelectBuilder struct {
 	group   []string
 	having  BuildFunc
 	order   []string
+	limit   int
+	offset  int
 }
 
 func Select(columns ...string) *SelectBuilder {
 	sb := &SelectBuilder{
 		Builder: NewBuilder(),
 		columns: columns,
+		limit:   -1,
+		offset:  -1,
 	}
 	return sb
 }
@@ -89,6 +96,16 @@ func (sb *SelectBuilder) OrderBy(columns ...string) *SelectBuilder {
 	return sb
 }
 
+func (sb *SelectBuilder) Limit(limit int) *SelectBuilder {
+	sb.limit = limit
+	return sb
+}
+
+func (sb *SelectBuilder) Offset(offset int) *SelectBuilder {
+	sb.offset = offset
+	return sb
+}
+
 func (sb *SelectBuilder) Query() (string, []interface{}) {
 	sb.WriteString("SELECT ")
 	sb.WriteString(strings.Join(sb.columns, ", "))
@@ -107,6 +124,16 @@ func (sb *SelectBuilder) Query() (string, []interface{}) {
 	sb.having(sb.Builder)
 
 	sb.WriteString(strings.Join(sb.order, ", "))
+
+	if sb.limit >= 0 {
+		sb.WriteString(" LIMIT ")
+		sb.WriteString(strconv.Itoa(sb.limit))
+	}
+
+	if sb.offset >= 0 {
+		sb.WriteString(" OFFSET ")
+		sb.WriteString(strconv.Itoa(sb.offset))
+	}
 
 	return sb.String(), sb.args
 }
