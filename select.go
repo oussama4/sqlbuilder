@@ -36,6 +36,8 @@ type SelectBuilder struct {
 	columns []string
 	joins   []join
 	where   BuildFunc
+	group   []string
+	having  BuildFunc
 }
 
 func Select(columns ...string) *SelectBuilder {
@@ -68,6 +70,16 @@ func (sb *SelectBuilder) LeftJoin(table string, on BuildFunc) *SelectBuilder {
 
 func (sb *SelectBuilder) RightJoin(table string, on BuildFunc) *SelectBuilder {
 	sb.joins = append(sb.joins, join{right, table, on})
+	return sb
+}
+
+func (sb *SelectBuilder) GroupBy(columns ...string) *SelectBuilder {
+	sb.group = append(sb.group, columns...)
+	return sb
+}
+
+func (sb *SelectBuilder) Having(cond BuildFunc) *SelectBuilder {
+	sb.having = cond
 	return sb
 }
 
