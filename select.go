@@ -30,6 +30,7 @@ func buildJoin(j join, b *Builder) {
 	}
 	b.WriteString(" JOIN ")
 	b.WriteString(j.table)
+	b.WriteString(" ON ")
 	j.on(b)
 }
 
@@ -116,14 +117,22 @@ func (sb *SelectBuilder) Query() (string, []interface{}) {
 		buildJoin(j, sb.Builder)
 	}
 
-	sb.WriteString(" WHERE ")
-	sb.where(sb.Builder)
+	if sb.where != nil {
+		sb.WriteString(" WHERE ")
+		sb.where(sb.Builder)
+	}
 
-	sb.WriteString(strings.Join(sb.group, ", "))
-	sb.WriteString(" HAVING ")
-	sb.having(sb.Builder)
+	if len(sb.group) > 0 {
+		sb.WriteString(" GROUP BY ")
+		sb.WriteString(strings.Join(sb.group, ", "))
+		sb.WriteString(" HAVING ")
+		sb.having(sb.Builder)
+	}
 
-	sb.WriteString(strings.Join(sb.order, ", "))
+	if len(sb.order) > 0 {
+		sb.WriteString(" ORDER BY ")
+		sb.WriteString(strings.Join(sb.order, ", "))
+	}
 
 	if sb.limit >= 0 {
 		sb.WriteString(" LIMIT ")
