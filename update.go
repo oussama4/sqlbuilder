@@ -40,8 +40,10 @@ func (b *UpdateBuilder) Query() (string, []interface{}) {
 		b.WriteArg(v)
 	}
 
-	b.WriteString(" WHERE ")
-	b.where(b.Builder)
+	if b.where != nil {
+		b.WriteString(" WHERE ")
+		b.where(b.Builder)
+	}
 
 	return b.String(), b.args
 }
