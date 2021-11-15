@@ -118,11 +118,12 @@ func Not(fn BuildFunc) BuildFunc {
 // In builds an `IN` operator
 func In(col string, values ...interface{}) BuildFunc {
 	bf := func(b *Builder) {
+		b.WriteString(col)
 		b.WriteString(ops[OpIN])
 		b.WriteString("(")
 		for i, v := range values {
 			if i > 0 {
-				b.WriteString(",")
+				b.WriteString(", ")
 			}
 			b.WriteArg(v)
 		}
@@ -134,11 +135,12 @@ func In(col string, values ...interface{}) BuildFunc {
 // NotIn builds a `NOT IN` operator
 func NotIn(col string, values ...interface{}) BuildFunc {
 	bf := func(b *Builder) {
+		b.WriteString(col)
 		b.WriteString(ops[OpNotIN])
 		b.WriteString("(")
 		for i, v := range values {
 			if i > 0 {
-				b.WriteString(",")
+				b.WriteString(", ")
 			}
 			b.WriteArg(v)
 		}
