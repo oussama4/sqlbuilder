@@ -22,8 +22,11 @@ func (db *DeleteBuilder) Where(cond BuildFunc) *DeleteBuilder {
 func (db *DeleteBuilder) Query() (string, []interface{}) {
 	db.WriteString("DELETE FROM ")
 	db.WriteString(db.table)
-	db.WriteString(" WHERE ")
-	db.where(db.Builder)
+
+	if db.where != nil {
+		db.WriteString(" WHERE ")
+		db.where(db.Builder)
+	}
 
 	return db.String(), db.args
 }
