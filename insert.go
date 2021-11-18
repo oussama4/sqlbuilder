@@ -42,16 +42,18 @@ func (b *InsertBuilder) Query() (string, []interface{}) {
 	b.WriteString(") ")
 	b.WriteString("VALUES ")
 
-	for i, v := range b.values {
+	for i, row := range b.values {
 		if i > 0 {
-			b.WriteString(",")
+			b.WriteString(", ")
 		}
-		for j, u := range v {
+		b.WriteString("(")
+		for j, col := range row {
 			if j > 0 {
-				b.WriteString(",")
+				b.WriteString(", ")
 			}
-			b.WriteArg(u)
+			b.WriteArg(col)
 		}
+		b.WriteString(")")
 	}
 
 	return b.String(), b.args
