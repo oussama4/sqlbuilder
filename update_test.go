@@ -14,6 +14,11 @@ func TestUpdate(t *testing.T) {
 			args:      []interface{}{"airpod up", "descr"},
 		},
 		{
+			query:     Dialect(Sqlite).Update("products").Set("title", "airpod up").Set("description", "descr"),
+			wantQuery: "UPDATE products SET title = ?, description = ?",
+			args:      []interface{}{"airpod up", "descr"},
+		},
+		{
 			query: Update("product_variants").Set("price", 10.00).
 				Where(
 					And(
