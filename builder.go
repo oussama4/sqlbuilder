@@ -12,6 +12,7 @@ const (
 	Mysql    = "mysql"
 )
 
+// the BuildFunc type is used to add sql expressions to the provided builder
 type BuildFunc func(*Builder)
 
 // Builder is where we put our built sql query

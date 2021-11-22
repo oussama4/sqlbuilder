@@ -1,5 +1,6 @@
 package sqlbuilder
 
+// UpdateBuilder is a builder for update queries
 type UpdateBuilder struct {
 	*Builder
 	table   string
@@ -7,6 +8,7 @@ type UpdateBuilder struct {
 	where   BuildFunc
 }
 
+// Update creates a builder for update queries
 func Update(table string) *UpdateBuilder {
 	b := &UpdateBuilder{
 		table:   table,
@@ -16,16 +18,19 @@ func Update(table string) *UpdateBuilder {
 	return b
 }
 
+// Set sets the column to the provided value
 func (b *UpdateBuilder) Set(column string, value interface{}) *UpdateBuilder {
 	b.columns[column] = value
 	return b
 }
 
-func (b *UpdateBuilder) Where(pred BuildFunc) *UpdateBuilder {
-	b.where = pred
+// Where adds a where condition to the update query
+func (b *UpdateBuilder) Where(cond BuildFunc) *UpdateBuilder {
+	b.where = cond
 	return b
 }
 
+// Query builds the sql query and returns it along with its arguments
 func (b *UpdateBuilder) Query() (string, []interface{}) {
 	b.WriteString("UPDATE ")
 	b.WriteString(b.table)

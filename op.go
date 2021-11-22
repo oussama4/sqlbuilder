@@ -1,5 +1,6 @@
 package sqlbuilder
 
+// an Op represents a sql operator
 type Op int
 
 const (

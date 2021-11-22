@@ -34,6 +34,7 @@ func buildJoin(j join, b *Builder) {
 	j.on(b)
 }
 
+// SelectBuilder is a builder for select queries
 type SelectBuilder struct {
 	*Builder
 	table   string
@@ -47,6 +48,7 @@ type SelectBuilder struct {
 	offset  int
 }
 
+// Select creates a builder for select queries
 func Select(columns ...string) *SelectBuilder {
 	sb := &SelectBuilder{
 		Builder: NewBuilder(),
@@ -57,56 +59,67 @@ func Select(columns ...string) *SelectBuilder {
 	return sb
 }
 
+// From sets the table that we are selecting from
 func (sb *SelectBuilder) From(table string) *SelectBuilder {
 	sb.table = table
 	return sb
 }
 
-func (sb *SelectBuilder) Where(pred BuildFunc) *SelectBuilder {
-	sb.where = pred
+// Where adds a where condition to the select query
+func (sb *SelectBuilder) Where(cond BuildFunc) *SelectBuilder {
+	sb.where = cond
 	return sb
 }
 
+// Join adds an `INNER JOIN` clause to the query
 func (sb *SelectBuilder) Join(table string, on BuildFunc) *SelectBuilder {
 	sb.joins = append(sb.joins, join{inner, table, on})
 	return sb
 }
 
+// Join adds a `LEFT JOIN` clause to the query
 func (sb *SelectBuilder) LeftJoin(table string, on BuildFunc) *SelectBuilder {
 	sb.joins = append(sb.joins, join{left, table, on})
 	return sb
 }
 
+// Join adds a `RIGHT JOIN` clause to the query
 func (sb *SelectBuilder) RightJoin(table string, on BuildFunc) *SelectBuilder {
 	sb.joins = append(sb.joins, join{right, table, on})
 	return sb
 }
 
+// GroupBy adds a `GROUP BY` clause to the query
 func (sb *SelectBuilder) GroupBy(columns ...string) *SelectBuilder {
 	sb.group = append(sb.group, columns...)
 	return sb
 }
 
+// Having adds a `HAVING` condition to the query
 func (sb *SelectBuilder) Having(cond BuildFunc) *SelectBuilder {
 	sb.having = cond
 	return sb
 }
 
+// OrderBy adds an `ORDER BY` clause to the query
 func (sb *SelectBuilder) OrderBy(columns ...string) *SelectBuilder {
 	sb.order = append(sb.order, columns...)
 	return sb
 }
 
+// Limit adds a `LIMIT` clause to the query
 func (sb *SelectBuilder) Limit(limit int) *SelectBuilder {
 	sb.limit = limit
 	return sb
 }
 
+// Offset adds an `OFFSET` clause to the query
 func (sb *SelectBuilder) Offset(offset int) *SelectBuilder {
 	sb.offset = offset
 	return sb
 }
 
+// Query builds the sql query and returns it along with its arguments
 func (sb *SelectBuilder) Query() (string, []interface{}) {
 	sb.WriteString("SELECT ")
 	sb.WriteString(strings.Join(sb.columns, ", "))
