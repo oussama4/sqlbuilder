@@ -3,18 +3,20 @@ package sqlbuilder
 // InsertBuilder is a builder for insert queries
 type InsertBuilder struct {
 	*Builder
-	table   string
-	columns []string
-	values  [][]interface{}
+	table     string
+	columns   []string
+	values    [][]interface{}
+	returning []string
 }
 
 // Insert creates a builder for insert queries
 func Insert(table string) *InsertBuilder {
 	b := &InsertBuilder{
-		Builder: NewBuilder(),
-		table:   table,
-		columns: []string{},
-		values:  [][]interface{}{},
+		Builder:   NewBuilder(),
+		table:     table,
+		columns:   []string{},
+		values:    [][]interface{}{},
+		returning: []string{},
 	}
 	return b
 }
@@ -28,6 +30,11 @@ func (b *InsertBuilder) Columns(columns ...string) *InsertBuilder {
 // Values adds column values to the insert query
 func (b *InsertBuilder) Values(values ...interface{}) *InsertBuilder {
 	b.values = append(b.values, values)
+	return b
+}
+
+func (b *InsertBuilder) Returning(columns ...string) *InsertBuilder {
+	b.returning = columns
 	return b
 }
 
@@ -59,6 +66,16 @@ func (b *InsertBuilder) Query() (string, []interface{}) {
 			b.WriteArg(col)
 		}
 		b.WriteString(")")
+	}
+
+	if len(b.returning) > 0 {
+		b.WriteString(" RETURNING ")
+		for i, r := range b.returning {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			b.WriteString(r)
+		}
 	}
 
 	return b.String(), b.args
